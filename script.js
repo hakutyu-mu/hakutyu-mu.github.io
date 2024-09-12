@@ -41,8 +41,7 @@ const questions = [
 
 let currentQuestionIndex = 0;
 let score = 0;
-let timeLeft = 10;
-let timer;
+let timerInterval;  // タイマーを制御するための変数をグローバルに定義
 const maxQuestions = 30;
 
 const questionElement = document.getElementById('question');
@@ -51,21 +50,91 @@ const scoreElement = document.getElementById('score');
 const timerElement = document.getElementById('timer');
 const questionCounterElement = document.getElementById('question-counter');  // 問題番号表示用の要素
 
+// ページ読み込み時に初期化
+document.addEventListener("DOMContentLoaded", () => {
+    const startGameBtn = document.getElementById('start-button');
+    const titleScreen = document.getElementById('title-screen');
+    const gameScreen = document.getElementById('game-screen');
+
+    // スタートボタンがクリックされたときにゲームを開始
+    startGameBtn.addEventListener('click', () => {
+        titleScreen.style.display = 'none';  // タイトル画面を非表示
+        gameScreen.style.display = 'block';  // ゲーム画面を表示
+        startGame();  // ゲームを開始
+    });
+
+    // 終了ボタンにリスナーを追加
+    document.getElementById('end-game-btn').addEventListener('click', () => {
+        Swal.fire({
+            title: 'ゲームを終了しますか？',
+            text: "現在までの結果をリザルト画面に表示します。",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '終了する',
+            cancelButtonText: 'キャンセル'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                endGame();  // ゲーム終了処理を呼び出す
+            }
+        });
+    });
+
+    // ゲーム画面を初期状態で非表示に設定
+    gameScreen.style.display = 'none';
+});
+
 let shuffledQuestions;  // シャッフルされた質問リスト
 let results = [];  // 問題ごとの結果を保存するリスト
 
+// ゲームを開始する関数
 function startGame() {
-    shuffledQuestions = shuffleArray(questions).slice(0, maxQuestions);  // 質問をシャッフルして30問だけ取得
-    currentQuestionIndex = 0;
     score = 0;
-    results = [];  // 結果リストをリセット
-    loadQuestion();
+    currentQuestionIndex = 0;
+    shuffledQuestions = shuffleArray(questions).slice(0, maxQuestions);  // 質問をシャッフル
+    scoreElement.textContent = `スコア: ${score}`;
+    loadQuestion();  // 最初の問題をロード
+}
+
+// ゲーム終了時にタイマーを停止する関数
+function endGame() {
+    clearInterval(timerInterval);  // タイマーを停止
+
+    // 結果表示用のHTMLを作成
+    let resultHtml = '<h2>結果一覧</h2>';
+    results.forEach(result => {
+        resultHtml += `
+        <div class="result-card">
+            <h3>単語: ${result.word}</h3>
+            <p><strong>正しい選択肢:</strong> ${result.correctAnswer}</p>
+            <p><strong>あなたの選択肢:</strong> ${result.selectedAnswer}</p>
+            <p><strong>自分用メモ:</strong> ${result.explanation}</p>
+            <p><strong>結果:</strong> ${result.isCorrect ? '⭕️' : '✖️'}</p>
+        </div>`;
+    });
+
+    Swal.fire({
+        title: 'ゲーム終了！',
+        html: resultHtml,  // カード形式の結果を表示
+        confirmButtonText: 'もう一度プレイ',
+        showCancelButton: true,
+        cancelButtonText: '終了'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            resetGame();  // ゲームをリセットして再スタート
+        } else {
+            // タイトル画面に戻す処理
+            document.getElementById('game-screen').style.display = 'none';  // ゲーム画面を非表示
+            document.getElementById('title-screen').style.display = 'block';  // タイトル画面を表示
+            Swal.fire('ナイスファイト！');
+        }
+    });
 }
 
 function loadQuestion() {
-    clearInterval(timer);  // 前のタイマーをクリア
-    timeLeft = 10;  // 制限時間をリセット
-    timerElement.textContent = `残り時間: ${timeLeft}秒`;  // タイマーの表示を更新
+    clearInterval(timerInterval);  // 前のタイマーをクリア
+    const timeLimit = 15;  // タイマーの時間を15秒に設定
+    timerElement.textContent = `残り時間: ${timeLimit}秒`;  // タイマーの表示を更新
+    startTimer(timeLimit, timerElement);  // タイマーをスタート
 
     const currentQuestion = shuffledQuestions[currentQuestionIndex];  // シャッフルされた質問から取得
     const correctAnswer = currentQuestion.correct;
@@ -87,13 +156,11 @@ function loadQuestion() {
 
     // 現在の問題番号を表示
     questionCounterElement.textContent = `問題 ${currentQuestionIndex + 1} / ${maxQuestions}`;
-
-    startTimer();  // タイマーをスタート
 }
 
 function checkAnswer(selectedAnswer) {
     const currentQuestion = shuffledQuestions[currentQuestionIndex];
-    clearInterval(timer);
+    clearInterval(timerInterval);  // タイマーを停止
 
     const correctSound = document.getElementById('correct-sound');
     const incorrectSound = document.getElementById('incorrect-sound');
@@ -145,6 +212,7 @@ function checkAnswer(selectedAnswer) {
 }
 
 function nextQuestion() {
+    clearInterval(timerInterval);  // 前のタイマーをクリア
     currentQuestionIndex++;
     if (currentQuestionIndex < shuffledQuestions.length) {
         loadQuestion();  // 次の問題を読み込む
@@ -153,50 +221,23 @@ function nextQuestion() {
     }
 }
 
-function endGame() {
-    clearInterval(timer);
+function startTimer(duration, display) {
+    let timer = duration;
+    display.textContent = `残り時間: ${timer}秒`;
 
-    // 結果表示用のHTMLを作成
-    let resultHtml = '<h2>結果一覧</h2>';
-    results.forEach(result => {
-        resultHtml += `
-        <div class="result-card">
-            <h3>単語: ${result.word}</h3>
-            <p><strong>正しい選択肢:</strong> ${result.correctAnswer}</p>
-            <p><strong>あなたの選択肢:</strong> ${result.selectedAnswer}</p>
-            <p><strong>自分用メモ:</strong> ${result.explanation}</p>
-            <p><strong>結果:</strong> ${result.isCorrect ? '正解' : '不正解'}</p>
-        </div>`;
-    });
+    timerInterval = setInterval(function () {
+        timer--;
+        display.textContent = `残り時間: ${timer}秒`;
 
-    Swal.fire({
-        title: 'ゲーム終了！',
-        html: resultHtml,  // カード形式の結果を表示
-        confirmButtonText: 'もう一度プレイ',
-        showCancelButton: true,
-        cancelButtonText: '終了'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            resetGame();
-        } else {
-            Swal.fire('ありがとうございました！');
-        }
-    });
-}
-function startTimer() {
-    clearInterval(timer);  // 既存のタイマーをクリア
-    timer = setInterval(() => {
-        timeLeft--;
-        timerElement.textContent = `残り時間: ${timeLeft}秒`;
-        if (timeLeft <= 0) {
-            clearInterval(timer);  // タイムアウト
+        if (timer <= 0) {
+            clearInterval(timerInterval);  // タイマーを停止
             Swal.fire({
                 icon: 'error',
                 title: '時間切れ！',
-                text: '不正解です。',
-                confirmButtonText: '次の問題へ'
+                text: '次の問題へ進みます。',
+                confirmButtonText: 'OK'
             }).then(() => {
-                nextQuestion();  // 次の問題へ
+                nextQuestion();  // 時間切れの場合は次の問題へ
             });
         }
     }, 1000);
@@ -209,7 +250,6 @@ function resetGame() {
     startGame();  // ゲームをリセットして再スタート
 }
 
-// 配列をランダムにシャッフルする関数
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -217,26 +257,3 @@ function shuffleArray(array) {
     }
     return array;
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    startGame();  // ページ読み込み時にゲームを開始
-});
-
-// ページ読み込み時にゲーム終了ボタンにリスナーを追加
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById('end-game-btn').addEventListener('click', () => {
-        Swal.fire({
-            title: 'ゲームを終了しますか？',
-            text: "現在までの結果をリザルト画面に表示します。",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: '終了する',
-            cancelButtonText: 'キャンセル'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                endGame();  // ゲーム終了処理を呼び出す
-            }
-        });
-    });
-    startGame();  // ページ読み込み時にゲームを開始
-});

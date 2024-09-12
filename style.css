@@ -1,0 +1,97 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0fff0;
+}
+
+.game-container {
+    margin: 20px auto;
+    padding: 20px;
+    width: 300px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+#question {
+    font-size: 20px;  /* 問題の文字サイズを大きくする */
+    font-weight: bold;  /* 太字にする（任意） */
+    margin-bottom: 20px;  /* 余白を追加 */
+}
+
+button.option {
+    display: block;
+    width: 100%;
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #CD5C5C; /* インディアンレッド */
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+button.option:hover {
+    background-color: #b94e4e;
+}
+
+#score, #timer {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+/* リザルトカードのスタイル */
+.result-card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin: 10px 0;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    text-align: left;
+}
+
+.result-card h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+.result-card p {
+    margin: 5px 0;
+}
+
+.result-card strong {
+    color: #4CAF50; /* 強調する部分の色 */
+}
+
+/* スマホ対応のレスポンシブカード */
+@media only screen and (max-width: 600px) {
+    .result-card {
+        padding: 15px;
+        font-size: 14px;
+    }
+
+    .result-card h3 {
+        font-size: 16px;
+    }
+}
+
+/* 終了ボタンのスタイル */
+.end-game-btn {
+    background-color: #FF6347; /* トマト色 */
+    color: white;
+    padding: 10px 20px;
+    margin: 20px 0;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.end-game-btn:hover {
+    background-color: #e55341;
+}
+

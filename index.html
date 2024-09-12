@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古単語4択クイズゲーム</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- SweetAlert2のCDNを追加 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- 他のヘッダー内容 -->
+</head>
+<body>
+    <div class="game-container">
+        <h1>古単語4択クイズ</h1>
+        <div id="question-counter"></div>
+            <p id="question">Q: 問題がここに表示されます</p>
+        </div>
+        
+        <div id="options-container">
+            <button class="option" id="option1">選択肢1</button>
+            <button class="option" id="option2">選択肢2</button>
+            <button class="option" id="option3">選択肢3</button>
+            <button class="option" id="option4">選択肢4</button>
+        </div>
+        <p id="score">スコア: 0</p>
+        <p id="timer">残り時間: 15秒</p>
+    </div>
+  　<button id="end-game-btn" class="end-game-btn">ゲーム終了</button>
+
+    <script src="script.js"></script>
+    <audio id="correct-sound" src="audio/correct.mp3" preload="auto"></audio>
+<audio id="incorrect-sound" src="audio/incorrect.mp3" preload="auto"></audio>
+</body>
+</html>

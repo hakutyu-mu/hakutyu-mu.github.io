@@ -5,25 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>古単語4択クイズゲーム</title>
     <link rel="stylesheet" href="style.css">
+    <!-- SweetAlert2のCDNを追加 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- 他のヘッダー内容 -->
 </head>
 <body>
-    <!-- タイトル画面 -->
-    <div id="title-screen">
-        <div class="title-container">
-            <video id="title-animation" autoplay muted loop>
-                <source src="video/title.mp4" type="video/mp4">
-                お使いのブラウザはビデオタグに対応していません。
-            </video>
-            <button id="start-button">ゲームスタート</button>
-        </div>
-    </div>
-
-    <!-- ゲーム画面 -->
-    <div id="game-screen" class="game-container" style="display: none;">
+    <div class="game-container">
         <h1>古単語4択クイズ</h1>
         <div id="question-counter"></div>
-        <p id="question">Q: 問題がここに表示されます</p>
+            <p id="question">Q: 問題がここに表示されます</p>
+        </div>
+        
         <div id="options-container">
             <button class="option" id="option1">選択肢1</button>
             <button class="option" id="option2">選択肢2</button>
@@ -31,12 +23,12 @@
             <button class="option" id="option4">選択肢4</button>
         </div>
         <p id="score">スコア: 0</p>
-        <p id="timer">残り時間: 10秒</p>
-        <button id="end-game-btn" class="end-game-btn">ゲーム終了</button>
+        <p id="timer">残り時間: 15秒</p>
     </div>
+  　<button id="end-game-btn" class="end-game-btn">ゲーム終了</button>
 
     <script src="script.js"></script>
     <audio id="correct-sound" src="audio/correct.mp3" preload="auto"></audio>
-    <audio id="incorrect-sound" src="audio/incorrect.mp3" preload="auto"></audio>
+<audio id="incorrect-sound" src="audio/incorrect.mp3" preload="auto"></audio>
 </body>
 </html>
